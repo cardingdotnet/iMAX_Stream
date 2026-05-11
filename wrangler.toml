@@ -1,38 +1,10 @@
-# wrangler.toml — Cloudflare Workers config
-#
-# Used by `wrangler deploy` (via `npm run deploy`) to ship the Next.js app
-# to Cloudflare. The app is built with @opennextjs/cloudflare, which writes
-# its output to `.open-next/worker.js` and `.open-next/assets/`.
-#
-# The radio route is NOT served from here — it's redirected to Fly.io via
-# the RADIO_BASE_URL env var. See app/api/radio/[code]/route.ts.
-
 name = "egmax"
 main = ".open-next/worker.js"
 compatibility_date = "2025-12-01"
-# nodejs_compat is required by @opennextjs/cloudflare. It enables the Node.js
-# runtime APIs that the Next.js server bundle relies on.
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+pages_build_output_dir = ".open-next"
 
-# Static assets (JS chunks, images, etc) ship from the assets binding —
-# Cloudflare serves them from its edge CDN automatically.
 assets = { directory = ".open-next/assets", binding = "ASSETS" }
-
-# === Environment variables ===
-# Set these via the Cloudflare dashboard (Workers & Pages → your project →
-# Settings → Variables) OR via `wrangler secret put VAR_NAME`. NEVER commit
-# real values to this file.
-#
-# Required for the app to function:
-#   NEXT_PUBLIC_SUPABASE_URL
-#   NEXT_PUBLIC_SUPABASE_ANON_KEY
-#   SUPABASE_SERVICE_ROLE_KEY
-#   SOUNDCLOUD_CLIENT_ID
-#   RADIO_BASE_URL=https://egmax-radio.fly.dev    # ← your Fly.io URL
-#
-# All env vars listed under [vars] are PUBLIC (visible in the bundle).
-# Anything sensitive (service role key, SC client id) goes in `wrangler
-# secret put` instead.
 
 [observability]
 enabled = true
