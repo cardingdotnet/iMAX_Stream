@@ -1,17 +1,41 @@
 {
-  "name": "egmax-radio-server",
+  "name": "spotify-clone",
   "version": "1.0.0",
   "private": true,
-  "description": "Standalone radio streaming server for Fly.io. Hosts the IMVU-compatible /radio/{code}.mp3 endpoint with long-lived responses, while the rest of the app deploys to Cloudflare Pages.",
-  "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
-  },
-  "engines": {
-    "node": ">=20"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4"
+    "@supabase/ssr": "^0.5.1",
+    "@supabase/supabase-js": "^2.45.4",
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.447.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.2",
+    "zustand": "^4.5.5",
+    "react-hot-toast": "^2.4.1",
+    "hls.js": "^1.5.17"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "^1.0.0",
+    "@types/node": "^22.7.4",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.3.2",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "wrangler": "^4.0.0"
   }
 }
