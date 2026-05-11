@@ -1,0 +1,17 @@
+{
+  "name": "egmax-radio-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone radio streaming server for Fly.io. Hosts the IMVU-compatible /radio/{code}.mp3 endpoint with long-lived responses, while the rest of the app deploys to Cloudflare Pages.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}

@@ -1,0 +1,63 @@
+# EgMax radio server — Fly.io config
+#
+# This is the standalone radio server. The main Next.js app deploys to
+# Cloudflare Pages separately. Fly.io is used here ONLY because Cloudflare
+# Workers caps each request at 30s/5min, which kills long-lived radio
+# streams.
+#
+# To deploy:
+#   1. cd radio-server
+#   2. fly auth signup       (or `fly auth login`)
+#   3. fly launch --no-deploy --copy-config   (uses this file)
+#   4. fly secrets set SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... SOUNDCLOUD_CLIENT_ID=...
+#   5. fly deploy
+#
+# Free tier note (as of 2025/2026):
+#   - 3 shared-cpu-1x VMs free, 256MB RAM each. We size at 256MB.
+#   - 160 GB outbound transfer/month. ~40 GB per 24/7 listener at 128kbps.
+#   - No per-request timeout (this is the whole point of using Fly).
+#
+# Pick an app name unique to you (Fly names are global). Replace 'egmax-radio'
+# below if it's taken — `fly launch` will tell you.
+
+app = 'egmax-radio'
+primary_region = 'fra'  # Frankfurt — closest to Kuwait/Egypt for low IMVU latency. Change if you prefer.
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  PORT = '8080'
+  NODE_ENV = 'production'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # IMPORTANT: do NOT auto-stop the machine. A streaming server that's auto-
+  # stopped means cold-start every time IMVU reconnects, which causes audio
+  # gaps. Keep it warm.
+  auto_stop_machines = 'off'
+  auto_start_machines = true
+  min_machines_running = 1
+
+  # Concurrency: how many concurrent listeners per machine. The radio loop
+  # is mostly I/O-bound (waiting for SoundCloud + sleep()ing in the pacer),
+  # so one shared-cpu-1x can comfortably serve dozens. Soft = start refusing
+  # new connections; hard = drop existing.
+  [http_service.concurrency]
+    type = 'requests'
+    soft_limit = 50
+    hard_limit = 100
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/healthz'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
